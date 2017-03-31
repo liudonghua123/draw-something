@@ -7,7 +7,7 @@ var path = require('path');
 
 module.exports = {
   entry: [
-    'webpack-dev-server/client?http://localhost:8080',
+    'webpack-dev-server/client?http://'  + '113.55.127.137' + ':8080',
     'webpack/hot/dev-server',
     './scripts/index'
   ],

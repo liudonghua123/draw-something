@@ -1,5 +1,5 @@
 <template>
-    <canvas id="canvas" width="520" height="350" style="border: 1px solid #999;"></canvas>
+    <canvas id="canvas" style="border: 1px solid #999;"></canvas>
     <div id="keyword-box">
         <span>Keyword: </span>
         <span id="keyword"></span>
@@ -14,7 +14,7 @@ class Draw {
     constructor(el) {
         this.el = el
         this.canvas = document.getElementById(this.el)
-        this.cxt = this.canvas.getContext('2d')
+        this.ctx = this.canvas.getContext('2d')
         this.stage_info = canvas.getBoundingClientRect()
         this.path = {
             beginX: 0,
@@ -25,10 +25,11 @@ class Draw {
     }
 
     init(ws, btn) {
-        this.canvas.onmousedown = () => {
+        this.canvas.onmousedown = this.canvas.ontouchstart = () => {
             this.drawBegin(event, ws)
         }
-        this.canvas.onmouseup = () => {
+        //
+        this.canvas.onmouseup = this.canvas.ontouchend = this.canvas.ondragend = () => {
             this.drawEnd()
             ws.send('stop')
         }
@@ -36,41 +37,43 @@ class Draw {
     }
     drawBegin(e, ws) {
         window.getSelection() ? window.getSelection().removeAllRanges() : document.selection.empty()
-        this.cxt.strokeStyle = "#000"
+        this.ctx.strokeStyle = "#000"
 
-        this.cxt.beginPath()
-        this.cxt.moveTo(
-            e.clientX - this.stage_info.left,
-            e.clientY - this.stage_info.top
-        )
+        this.ctx.beginPath()
 
-        this.path.beginX = e.clientX - this.stage_info.left
-        this.path.beginY = e.clientY - this.stage_info.top
+        let x = e.clientX ? e.clientX : e.touches[0].clientX - this.stage_info.left;
+        let y = e.clientY ? e.clientY : e.touches[0].clientY - this.stage_info.top;
 
-        document.onmousemove = () => {
+        this.ctx.moveTo(x, y)
+
+        this.path.beginX = x
+        this.path.beginY = y
+
+        document.onmousemove = this.canvas.ontouchmove = () => {
             this.drawing(event, ws)
         }
         // document.onmouseup = this.drawEnd
     }
     drawing(e, ws) {
-        this.cxt.lineTo(
-            e.clientX - this.stage_info.left,
-            e.clientY - this.stage_info.top
-        )
 
-        this.path.endX = e.clientX - this.stage_info.left
-        this.path.endY = e.clientY - this.stage_info.top
+        let x = e.clientX ? e.clientX : e.touches[0].clientX - this.stage_info.left;
+        let y = e.clientY ? e.clientY : e.touches[0].clientY - this.stage_info.top;
+
+        this.ctx.lineTo(x, y)
+
+        this.path.endX = x
+        this.path.endY = y
 
         ws.send(this.path.beginX + '.' + this.path.beginY + '.' + this.path.endX + '.' + this.path.endY)
 
-        this.cxt.stroke()
+        this.ctx.stroke()
     }
     drawEnd() {
-        document.onmousemove = document.onmouseup = null
+        document.onmousemove = document.onmouseup = this.canvas.ontouchmove = this.canvas.ontouchend = null
     }
     clearCanvas(ws, btn) {
         btn.onclick = () => {
-            this.cxt.clearRect(0, 0, 500, 500)
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
             ws.send('clear')
         }
     }
@@ -78,7 +81,7 @@ class Draw {
 
 export default {
     ready() {
-        const ws = new WebSocket('ws://localhost:8090')
+        const ws = new WebSocket('ws://113.55.127.137:8090')
         let draw = new Draw('canvas')
         let btn = document.getElementById('btn')
         ws.onopen = () => {

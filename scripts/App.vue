@@ -10,7 +10,7 @@
 import Vue from 'vue'
 
 import DrawingBoard from './components/drawing-board.vue'
-import showingBoard from './components/showing-board.vue'
+import ShowingBoard from './components/showing-board.vue'
 
 export default {
     data() {
@@ -20,7 +20,7 @@ export default {
     },
     components: {
       DrawingBoard,
-      showingBoard
+      ShowingBoard
     },
     methods: {
       draw() {

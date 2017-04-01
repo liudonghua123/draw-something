@@ -25,18 +25,34 @@ class Draw {
     }
 
     init(ws, btn) {
+        let onMove = false;
+
         this.canvas.onmousedown = this.canvas.ontouchstart = () => {
+            onMove = true
+            console.info(event.type, "triggered");
+            event.preventDefault()
             this.drawBegin(event, ws)
         }
+
+        this.canvas.onmousemove = this.canvas.ontouchmove = () => {
+            if(onMove) {
+                console.info(event.type, "triggered");
+                event.preventDefault()
+                this.drawing(event, ws)
+            }
+        }
         //
-        this.canvas.onmouseup = this.canvas.ontouchend = this.canvas.ondragend = () => {
-            this.drawEnd()
+        this.canvas.onmouseup = this.canvas.ontouchend = this.canvas.ontouchcancel = () => {
+            onMove = false
+            console.info(event.type, "triggered");
+            event.preventDefault()
+//            this.drawEnd()
             ws.send('stop')
         }
         this.clearCanvas(ws, btn)
     }
     drawBegin(e, ws) {
-        window.getSelection() ? window.getSelection().removeAllRanges() : document.selection.empty()
+//        window.getSelection() ? window.getSelection().removeAllRanges() : document.selection.empty()
         this.ctx.strokeStyle = "#000"
 
         this.ctx.beginPath()
@@ -48,11 +64,6 @@ class Draw {
 
         this.path.beginX = x
         this.path.beginY = y
-
-        document.onmousemove = this.canvas.ontouchmove = () => {
-            this.drawing(event, ws)
-        }
-        // document.onmouseup = this.drawEnd
     }
     drawing(e, ws) {
 
@@ -61,10 +72,14 @@ class Draw {
 
         this.ctx.lineTo(x, y)
 
+//        this.path.startX = this.path.endX
+//        this.path.startY = this.path.endY
         this.path.endX = x
         this.path.endY = y
 
-        ws.send(this.path.beginX + '.' + this.path.beginY + '.' + this.path.endX + '.' + this.path.endY)
+        let sendData = parseInt(this.path.beginX) + '.' + parseInt(this.path.beginY) + '.' + parseInt(this.path.endX) + '.' + parseInt(this.path.endY);
+        console.info("send data", sendData);
+        ws.send(sendData)
 
         this.ctx.stroke()
     }

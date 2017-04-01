@@ -11,7 +11,7 @@
     'use strict'
     export default {
         ready() {
-            const ws = new WebSocket('ws://113.55.127.137:8090');
+            const ws = new WebSocket('ws://' + window.location.hostname + ':8090')
             const canvas = document.getElementById('showing')
             const ctx = canvas.getContext('2d')
             let moveToSwitch = 1

@@ -96,7 +96,7 @@ class Draw {
 
 export default {
     ready() {
-        const ws = new WebSocket('ws://113.55.127.137:8090')
+        const ws = new WebSocket('ws://' + window.location.hostname + ':8090')
         let draw = new Draw('canvas')
         let btn = document.getElementById('btn')
         ws.onopen = () => {

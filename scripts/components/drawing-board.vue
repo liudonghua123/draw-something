@@ -41,8 +41,8 @@ class Draw {
 
         this.ctx.beginPath()
 
-        let x = e.clientX ? e.clientX : e.touches[0].clientX - this.stage_info.left;
-        let y = e.clientY ? e.clientY : e.touches[0].clientY - this.stage_info.top;
+        let x = (e.clientX ? e.clientX : e.touches[0].clientX) - this.stage_info.left;
+        let y = (e.clientY ? e.clientY : e.touches[0].clientY) - this.stage_info.top;
 
         this.ctx.moveTo(x, y)
 
@@ -56,8 +56,8 @@ class Draw {
     }
     drawing(e, ws) {
 
-        let x = e.clientX ? e.clientX : e.touches[0].clientX - this.stage_info.left;
-        let y = e.clientY ? e.clientY : e.touches[0].clientY - this.stage_info.top;
+        let x = (e.clientX ? e.clientX : e.touches[0].clientX) - this.stage_info.left;
+        let y = (e.clientY ? e.clientY : e.touches[0].clientY) - this.stage_info.top;
 
         this.ctx.lineTo(x, y)
 
